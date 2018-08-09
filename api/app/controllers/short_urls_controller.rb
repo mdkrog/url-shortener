@@ -1,6 +1,4 @@
 class ShortUrlsController < ApplicationController
-  before_action :requires_application_json_content_type, only: [:create]
-
   def show
     url = Rails.cache.read(params[:short_url])
 
@@ -12,7 +10,6 @@ class ShortUrlsController < ApplicationController
   end
 
   def create
-    # binding.pry
     short_url = ShortUrl.new.call(params[:url])
     render json: {short_url: "/#{short_url}", url: params[:url]}
   end

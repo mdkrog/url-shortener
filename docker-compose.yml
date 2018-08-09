@@ -9,3 +9,13 @@ services:
       - "3000:3000"
     volumes:
       - ./api:/app
+
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend/static_content:/usr/share/nginx/html
+    restart: always

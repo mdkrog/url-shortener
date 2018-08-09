@@ -23,13 +23,6 @@ RSpec.describe "Short URL API", type: :request do
       expect(response.parsed_body['short_url']).to eq("/0c984e")
       expect(response.parsed_body['url']).to eq("www.farmdrop.com")
     end
-    
-    it "should respond 400 if content-type header not present" do
-      post "/", params: '{ "url": "www.farmdrop.com" }'
-
-      expect(response).to have_http_status(415)
-      expect(response.parsed_body['error']).to eq("Please ensure you have a content-type header set to application/json")
-    end
 
     def headers
       { "CONTENT_TYPE": "application/json" }
