@@ -7,7 +7,7 @@ RSpec.describe ShortUrl, type: :model do
     end
 
     it "takes a url and returns a shortened version" do
-      url_sanitizer = double('UrlSanitizer', sanitize: "farmdrop.com")
+      url_sanitizer = double('UrlSanitizer', sanitize: "http://farmdrop.com")
       url_squisher = double('Squisher', squash: "abc123")
       
       shortener = ShortUrl.new(url_sanitizer: url_sanitizer, url_squisher: url_squisher)
@@ -19,19 +19,19 @@ RSpec.describe ShortUrl, type: :model do
     end
     
     it "stores the short url in the cache" do
-      url_sanitizer = double('UrlSanitizer', sanitize: "testing.com")
+      url_sanitizer = double('UrlSanitizer', sanitize: "http://testing.com")
       url_squisher = double('Squisher', squash: "def456")
       
       shortener = ShortUrl.new(url_sanitizer: url_sanitizer, url_squisher: url_squisher)
       short_url = shortener.call("http://www.testing.com")
       
-      expect(Rails.cache.read("def456")).to eq("testing.com")
+      expect(Rails.cache.read("def456")).to eq("http://testing.com")
     end
 
     context "when collision occurs" do
       it "shortens multiple times if there is a collision" do
-        Rails.cache.write("abc", "exists.com")
-        url_sanitizer = double('UrlSanitizer', sanitize: "random.com")
+        Rails.cache.write("abc", "http://exists.com")
+        url_sanitizer = double('UrlSanitizer', sanitize: "http://random.com")
         url_squisher = double('Squisher')
         allow(url_squisher).to receive(:squash).and_return('abc', 'def', 'ghi')
 
@@ -39,14 +39,14 @@ RSpec.describe ShortUrl, type: :model do
         shortener = ShortUrl.new(url_sanitizer: url_sanitizer, url_squisher: url_squisher)
         short_url = shortener.call("http://www.random.com")
 
-        expect(Rails.cache.read("abc")).to eq("exists.com")
-        expect(Rails.cache.read("def")).to eq("random.com")
+        expect(Rails.cache.read("abc")).to eq("http://exists.com")
+        expect(Rails.cache.read("def")).to eq("http://random.com")
         expect(url_squisher).to have_received(:squash).twice
       end
 
       it "it doesn't shorten multiple times if the same url already exists" do
-        Rails.cache.write("abc", "exists.com")
-        url_sanitizer = double('UrlSanitizer', sanitize: "exists.com")
+        Rails.cache.write("abc", "http://exists.com")
+        url_sanitizer = double('UrlSanitizer', sanitize: "http://exists.com")
         url_squisher = double('Squisher')
         allow(url_squisher).to receive(:squash).and_return('abc', 'def')
 
@@ -54,7 +54,7 @@ RSpec.describe ShortUrl, type: :model do
         shortener = ShortUrl.new(url_sanitizer: url_sanitizer, url_squisher: url_squisher)
         short_url = shortener.call("http://www.exists.com")
 
-        expect(Rails.cache.read("abc")).to eq("exists.com")
+        expect(Rails.cache.read("abc")).to eq("http://exists.com")
         expect(Rails.cache.read("def")).to eq(nil)
         expect(url_squisher).to have_received(:squash).once
       end

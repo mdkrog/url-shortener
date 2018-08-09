@@ -1,7 +1,7 @@
 class ShortUrl
   attr_accessor :url_sanitizer, :url_squisher
 
-  def initialize(url_sanitizer: UrlSanitizer.new, url_squisher: DeterministicSquisher)
+  def initialize(url_sanitizer: UrlSanitizer, url_squisher: DeterministicSquisher)
     @url_sanitizer = url_sanitizer
     @url_squisher = url_squisher
   end
