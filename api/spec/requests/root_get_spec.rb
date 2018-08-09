@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe "Short URL API", type: :request do
   describe "GET /" do
+    before(:each) do
+      Rails.cache.clear
+    end
+    
     it "redirects to the url stored in cache" do
       Rails.cache.write("xyz123", "http://www.farmdrop.com")
       get "/xyz123"
